@@ -126,7 +126,7 @@ def plot_fit_result(x, y, fit_func):
 
     # 绘制原始数据和拟合曲线
     plt.scatter(x, y, color="black", label="原始数据", s=20)
-    # plt.plot(x_smooth, fit_func(x_smooth), "r-", label="拟合曲线", linewidth=2)
+    plt.plot(x_smooth, fit_func(x_smooth), "r-", label="拟合曲线", linewidth=2)
 
     plt.xlabel("X")
     plt.ylabel("Y")
