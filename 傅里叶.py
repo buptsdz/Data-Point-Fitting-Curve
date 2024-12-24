@@ -67,7 +67,7 @@ def export_fourier_formula(coeffs, filename="fourier_series.txt"):
 
 
 # 绘图函数
-def plot_fit(x, y, coeffs):
+def plot_fit(x, y, coeffs, output_file):
     plt.figure(figsize=(10, 6))
 
     # 原始数据
@@ -82,6 +82,7 @@ def plot_fit(x, y, coeffs):
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.legend()
+    plt.savefig(output_file, dpi=300)
     plt.show()
 
 
@@ -90,17 +91,20 @@ if __name__ == "__main__":
     mpl.rcParams["font.sans-serif"] = ["SimHei"]
     mpl.rcParams["axes.unicode_minus"] = False
 
-    # filename = "TDM.txt"
-    # x, y = load_and_sort_data(filename)
-    # output_file = "fourier_series.txt"
+    # 数据读取1
+    filename = "TDM.txt"
+    x, y = load_and_sort_data(filename)
+    file_prefix = "fourier_series1"
+    n_terms = 90  # 设置傅里叶级数的阶数
 
-    filename_x = "x.txt"
-    filename_y = "CB1_interp_a.txt"
-    x, y = load_and_sort_data_split(filename_x, filename_y)
-    output_file = "fourier_series2.txt"
+    # 数据读取2
+    # filename_x = "x.txt"
+    # filename_y = "CB1_interp_a.txt"
+    # x, y = load_and_sort_data_split(filename_x, filename_y)
+    # file_prefix = "fourier_series2"
+    # n_terms = 80  # 设置傅里叶级数的阶数
 
-    n_terms = 80  # 设置傅里叶级数的阶数（可以调整）
     coeffs = fit_fourier(x, y, n_terms)
 
-    plot_fit(x, y, coeffs)
-    export_fourier_formula(coeffs, output_file)
+    plot_fit(x, y, coeffs, file_prefix + ".png")
+    export_fourier_formula(coeffs, file_prefix + ".txt")
