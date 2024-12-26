@@ -2,6 +2,7 @@ import numpy as np
 from scipy.interpolate import LSQUnivariateSpline
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import os
 
 
 def get_spline_expression(spline):
@@ -101,7 +102,7 @@ def fit_smooth_curve_improved(filename):
     return x_new, y_new, spline
 
 
-def plot_fitting_result(x, y, x_new, y_new):
+def plot_fitting_result(x, y, x_new, y_new, output_dir):
     """绘制原始数据点和拟合曲线"""
     plt.figure(figsize=(10, 6))
     plt.scatter(x, y, color="blue", label="原始数据点", alpha=0.5)
@@ -111,37 +112,8 @@ def plot_fitting_result(x, y, x_new, y_new):
     plt.title("数据拟合结果")
     plt.legend()
     plt.grid(True, alpha=0.3)
+    plt.savefig(os.path.join(output_dir, "分段函数拟合.png"))
     plt.show()
-
-
-def main(filename):
-    try:
-        # 读取数据并拟合
-        x_new, y_new, spline = fit_smooth_curve_improved(filename)
-
-        # 读取原始数据用于绘图
-        data = np.loadtxt(filename)
-        x = data[:, 0]
-        y = data[:, 1]
-
-        # 绘制结果
-        plot_fitting_result(x, y, x_new, y_new)
-
-        # 获取并打印拟合曲线表达式
-        print("\n拟合曲线的分段多项式表达式：")
-        expression = get_spline_expression(spline)
-        print(expression)
-
-        # 保存表达式到文件
-        with open("fitting_expression.txt", "w", encoding="utf-8") as f:
-            f.write(expression)
-        print("\n表达式已保存到 fitting_expression.txt")
-
-        return spline
-
-    except Exception as e:
-        print(f"处理过程中出现错误: {str(e)}")
-        return None
 
 
 if __name__ == "__main__":
@@ -149,5 +121,29 @@ if __name__ == "__main__":
     mpl.rcParams["font.sans-serif"] = ["SimHei"]
     mpl.rcParams["axes.unicode_minus"] = False
 
-    filename = "TDM.txt"  # 替换为你的数据文件路径
-    spline = main(filename)
+    filename = "./data/1_TDM.txt"
+    # 读取数据并拟合
+    x_new, y_new, spline = fit_smooth_curve_improved(filename)
+
+    # 读取原始数据用于绘图
+    data = np.loadtxt(filename)
+    x = data[:, 0]
+    y = data[:, 1]
+
+    output_dir = "./output/分段函数拟合"
+    os.makedirs(output_dir, exist_ok=True)
+
+    output_file = os.path.join(output_dir, "分段函数拟合.txt")
+
+    # 绘制结果
+    plot_fitting_result(x, y, x_new, y_new, output_dir)
+
+    # 获取并打印拟合曲线表达式
+    # print("\n拟合曲线的分段多项式表达式：")
+    expression = get_spline_expression(spline)
+    # print(expression)
+
+    # 保存表达式到文件
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(expression)
+    print("\n表达式已保存到:分段函数拟合.txt")

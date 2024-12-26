@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import matplotlib as mpl
+import os
 
 
 def triple_gaussian_with_background(
@@ -117,7 +118,7 @@ def fit_spectrum(x, y):
     return lambda x: triple_gaussian_with_background(x, *popt), popt
 
 
-def plot_fit_result(x, y, fit_func):
+def plot_fit_result(x, y, fit_func, output_dir):
     """绘制拟合结果"""
     plt.figure(figsize=(12, 8))
 
@@ -133,22 +134,23 @@ def plot_fit_result(x, y, fit_func):
     plt.grid(True)
     plt.legend()
     plt.title("TDM数据拟合")
+    plt.savefig(os.path.join(output_dir, "图1_三高斯组合拟合.png"))
     plt.show()
 
 
-def main(filename):
+def main(data, output_dir):
     # 设置中文显示字体
     mpl.rcParams["font.sans-serif"] = ["SimHei"]
     mpl.rcParams["axes.unicode_minus"] = False
 
     # 加载数据
-    x, y = load_data(filename)
+    x, y = load_data(data)
 
     # 拟合数据
     fit_func, params = fit_spectrum(x, y)
 
     # 绘制结果
-    plot_fit_result(x, y, fit_func)
+    plot_fit_result(x, y, fit_func, output_dir)
 
     # 输出拟合参数
     param_names = [
@@ -172,11 +174,19 @@ def main(filename):
 
     # 输出函数表达式
     print("\n拟合函数表达式:")
+    with open(
+        os.path.join(output_dir, "图1_三高斯组合拟合.txt"), "w", encoding="utf-8"
+    ) as f:
+        f.write("三高斯组合拟合函数表达式:\n")
+        f.write(get_function_expression(params))
+
     print(get_function_expression(params))
 
     return fit_func, params
 
 
 if __name__ == "__main__":
-    filename = "TDM.txt"  # 替换为你的数据文件名
-    fit_func, params = main(filename)
+    output_dir = "./output/高斯组合拟合"
+    os.makedirs(output_dir, exist_ok=True)
+    data = "./data/1_TDM.txt"
+    fit_func, params = main(data, output_dir)

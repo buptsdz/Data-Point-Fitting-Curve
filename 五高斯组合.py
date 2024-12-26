@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import matplotlib as mpl
+import os
 
 
 def five_gaussian_with_background(
@@ -194,12 +195,12 @@ def fit_spectrum(x, y):
     return lambda x: five_gaussian_with_background(x, *popt), popt
 
 
-def plot_fit_result(x, y, fit_func):
+def plot_fit_result(x, y, fit_func, output_dir):
     """绘制拟合结果"""
     plt.figure(figsize=(12, 8))
 
-    # x_smooth = np.linspace(min(x), max(x), 1000)
-    # plt.plot(x_smooth, fit_func(x_smooth), "r-", label="拟合曲线", linewidth=2)
+    x_smooth = np.linspace(min(x), max(x), 1000)
+    plt.plot(x_smooth, fit_func(x_smooth), "r-", label="拟合曲线", linewidth=2)
 
     plt.scatter(x, y, color="black", label="原始数据", s=20)
     plt.xlabel("X")
@@ -207,10 +208,11 @@ def plot_fit_result(x, y, fit_func):
     plt.grid(True)
     plt.legend()
     plt.title("CB1_interp_a数据拟合")
+    plt.savefig(os.path.join(output_dir, "图2_五高斯组合拟合.png"))
     plt.show()
 
 
-def main(filex, filey):
+def main(filex, filey, output_dir):
     # 设置中文显示字体
     mpl.rcParams["font.sans-serif"] = ["SimHei"]
     mpl.rcParams["axes.unicode_minus"] = False
@@ -223,7 +225,7 @@ def main(filex, filey):
     fit_func, params = fit_spectrum(x, y)
 
     # 绘制结果
-    plot_fit_result(x, y, fit_func)
+    plot_fit_result(x, y, fit_func, output_dir)
 
     # 输出拟合参数
     param_names = [
@@ -253,12 +255,20 @@ def main(filex, filey):
 
     # 输出函数表达式
     print("\n拟合函数表达式:")
+    with open(
+        os.path.join(output_dir, "图2_五高斯组合拟合.txt"), "w", encoding="utf-8"
+    ) as f:
+        f.write("五高斯组合拟合函数表达式:\n")
+        f.write(get_function_expression(params))
+
     print(get_function_expression(params))
 
     return fit_func, params
 
 
 if __name__ == "__main__":
-    filex = "x.txt"  # 替换为你的数据文件名
-    filey = "CB1_interp_a.txt"
-    fit_func, params = main(filex, filey)
+    output_dir = "./output/高斯组合拟合"
+    os.makedirs(output_dir, exist_ok=True)
+    filex = "./data/2_x.txt"  # 替换为你的数据文件名
+    filey = "./data/2_CB1_interp_a.txt"
+    fit_func, params = main(filex, filey, output_dir)
