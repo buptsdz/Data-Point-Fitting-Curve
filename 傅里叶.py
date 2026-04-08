@@ -106,7 +106,7 @@ def plot_fit(x, y, coeffs, output_filename, output_dir):
     y_fit = fourier_series(x_fit, *coeffs)
     plt.plot(x_fit, y_fit, color="red", label="傅里叶拟合")
 
-    plt.title("傅里叶级数拟合")
+    plt.title(f"傅里叶级数拟合n={n_terms}")
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.legend()
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     data_y = "./data/2_CB1_interp_a.txt"
     x, y = load_and_sort_data_split(data_x, data_y)
     output_filename = "fourier_series"
-    n_terms = 80
+    n_terms = 60
 
     coeffs = fit_fourier_weighted(x, y, n_terms, target_x=0)
     y_fit = fourier_series(x, *coeffs)
